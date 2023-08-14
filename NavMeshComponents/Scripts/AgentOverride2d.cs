@@ -14,6 +14,7 @@ namespace NavMeshPlus.Extensions
         {
         }
     }
+    [RequireComponent(typeof(NavMeshAgent))]
     public class AgentOverride2d: MonoBehaviour
     {
         public NavMeshAgent Agent { get; private set; }
