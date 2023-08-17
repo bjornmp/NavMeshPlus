@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
+using static UnityEngine.Collider2D;
 using Object = UnityEngine.Object;
 
 namespace NavMeshPlus.Extensions
@@ -254,7 +255,7 @@ namespace NavMeshPlus.Extensions
 
         public static void CollectSources(List<NavMeshBuildSource> sources, Collider2D collider, int area, NavMeshBuilder2dState builder)
         { 
-            if (collider.usedByComposite)
+            if (collider.compositeOperation != CompositeOperation.None)
             {
                 collider = collider.GetComponent<CompositeCollider2D>();
             }

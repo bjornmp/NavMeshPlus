@@ -43,6 +43,8 @@ namespace NavMeshPlus.Components
         int m_Area;
         public int area { get { return m_Area; } set { m_Area = value; UpdateLink(); } }
 
+        public bool activated { get { return NavMesh.IsLinkActive(m_LinkInstance); } set { NavMesh.SetLinkActive(m_LinkInstance, value); } }
+
         NavMeshLinkInstance m_LinkInstance = new NavMeshLinkInstance();
 
         Vector3 m_LastPosition = Vector3.zero;
@@ -53,19 +55,19 @@ namespace NavMeshPlus.Components
         void OnEnable()
         {
             AddLink();
-            if (m_AutoUpdatePosition && m_LinkInstance.valid)
+            if (m_AutoUpdatePosition && NavMesh.IsLinkValid(m_LinkInstance))
                 AddTracking(this);
         }
 
         void OnDisable()
         {
             RemoveTracking(this);
-            m_LinkInstance.Remove();
+            NavMesh.RemoveLink(m_LinkInstance);
         }
 
         public void UpdateLink()
         {
-            m_LinkInstance.Remove();
+            NavMesh.RemoveLink(m_LinkInstance);
             AddLink();
         }
 
@@ -107,7 +109,7 @@ namespace NavMeshPlus.Components
         void AddLink()
         {
 #if UNITY_EDITOR
-            if (m_LinkInstance.valid)
+            if (NavMesh.IsLinkValid(m_LinkInstance))
             {
                 Debug.LogError("Link is already added: " + this);
                 return;
@@ -123,8 +125,8 @@ namespace NavMeshPlus.Components
             link.area = m_Area;
             link.agentTypeID = m_AgentTypeID;
             m_LinkInstance = NavMesh.AddLink(link, transform.position, transform.rotation);
-            if (m_LinkInstance.valid)
-                m_LinkInstance.owner = this;
+            if (NavMesh.IsLinkValid(m_LinkInstance))
+                NavMesh.SetLinkOwner(m_LinkInstance, this);
 
             m_LastPosition = transform.position;
             m_LastRotation = transform.rotation;
@@ -156,7 +158,7 @@ namespace NavMeshPlus.Components
         {
             m_Width = Mathf.Max(0.0f, m_Width);
 
-            if (!m_LinkInstance.valid)
+            if (!NavMesh.IsLinkValid(m_LinkInstance))
                 return;
 
             UpdateLink();
